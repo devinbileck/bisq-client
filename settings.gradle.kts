@@ -11,4 +11,5 @@ rootProject.name = "Bisq"
 
 include(":androidApp")
 include(":desktopApp")
+include(":webApp")
 include(":shared")

@@ -1,5 +1,5 @@
 # Bisq Client
-A client for the [Bisq network](https://github.com/bisq-network/bisq) supporting **Android**, **iOS**, and **Desktop** platforms.
+A client for the [Bisq network](https://github.com/bisq-network/bisq) supporting **Android**, **iOS**, **Desktop**, and **Web** platforms.
 
 # Running the Application
 
@@ -18,6 +18,11 @@ To build a native desktop distribution:
 ```
 ./gradlew :desktopApp:package
 # output is written to desktopApp/build/compose/binaries
+```
+
+# Web
+```
+./gradlew :webApp:jsBrowserDevelopmentRun
 ```
 
 # Contributing

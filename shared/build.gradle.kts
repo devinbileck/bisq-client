@@ -35,6 +35,13 @@ kotlin {
         }
     }
 
+    js("web",IR) {
+        browser {
+            useCommonJs()
+            binaries.executable()
+        }
+    }
+
     sourceSets {
         val commonMain by getting
         val commonTest by getting {
@@ -54,6 +61,13 @@ kotlin {
         val iosTest by getting
         val desktopMain by getting
         val desktopTest by getting {
+            dependencies {
+                implementation(kotlin("test-junit"))
+                implementation("junit:junit:4.13.2")
+            }
+        }
+        val webMain by getting
+        val webTest by getting {
             dependencies {
                 implementation(kotlin("test-junit"))
                 implementation("junit:junit:4.13.2")
