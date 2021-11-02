@@ -5,17 +5,16 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:7.1.0-alpha13")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}")
+        classpath(Build.kotlinGradlePlugin)
+        classpath(Build.buildTools)
+        classpath(Build.sqlDelightGradlePlugin)
+        classpath(Build.hiltGradlePlugin)
     }
 }
 
 allprojects {
     repositories {
-        gradlePluginPortal()
         google()
-        maven(url = "https://kotlin.bintray.com/kotlinx/")
         mavenCentral()
-        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }
 }

@@ -1,0 +1,39 @@
+CREATE TABLE notification_Entity(
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    type TEXT NOT NULL,
+    message TEXT NOT NULL,
+    time_occurred REAL NOT NULL,
+    time_received REAL NOT NULL
+);
+
+selectAll:
+SELECT *
+FROM notification_Entity;
+
+insertNotification:
+INSERT OR REPLACE
+INTO notification_Entity (
+    id,
+    type,
+    message,
+    time_occurred,
+    time_received
+) VALUES (?, ?, ?, ?, ?);
+
+searchNotifications:
+SELECT * FROM notification_Entity
+WHERE type LIKE ('%' || :query || '%')
+OR message LIKE ('%' || :query || '%')
+ORDER BY time_occurred DESC
+LIMIT :pageSize
+OFFSET :offset;
+
+getAllNotifications:
+SELECT * FROM notification_Entity
+-- ORDER BY date_updated DESC -- Ordering can cause duplicates in the results because they all have identical timestamps
+LIMIT :pageSize
+OFFSET :offset;
+
+getNotificationById:
+SELECT * FROM notification_Entity
+WHERE id = :id;

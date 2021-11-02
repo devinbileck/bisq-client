@@ -1,20 +1,26 @@
 package bisq.client.android
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import bisq.client.Greeting
-import android.widget.TextView
+import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.ui.ExperimentalComposeUiApi
+import bisq.client.android.presentation.navigation.Navigation
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
-fun greet(): String {
-    return Greeting().greeting()
-}
-
+@ExperimentalCoroutinesApi
+@ExperimentalStdlibApi
+@ExperimentalFoundationApi
+@ExperimentalComposeUiApi
+@ExperimentalMaterialApi
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
-        val tv: TextView = findViewById(R.id.text_view)
-        tv.text = greet()
+        setContent{
+            Navigation()
+        }
     }
 }

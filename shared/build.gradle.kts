@@ -1,27 +1,29 @@
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 plugins {
-    kotlin("multiplatform")
-    kotlin("native.cocoapods")
-    id("com.android.library")
+    kotlin(KotlinPlugins.multiplatform)
+    kotlin(KotlinPlugins.cocoapods)
+    id(Plugins.androidLibrary)
+    id(Plugins.sqlDelight)
 }
 
-version = "1.0"
+// CocoaPods requires the podspec to have a version
+version = Application.versionName
 
 kotlin {
     android()
 
-    val iosTarget: (String, KotlinNativeTarget.() -> Unit) -> KotlinNativeTarget = when {
-        System.getenv("SDK_NAME")?.startsWith("iphoneos") == true -> ::iosArm64
-        System.getenv("NATIVE_ARCH")?.startsWith("arm") == true -> ::iosSimulatorArm64
-        else -> ::iosX64
-    }
+    val iosTarget: (String, KotlinNativeTarget.() -> Unit) -> KotlinNativeTarget =
+        if (System.getenv("SDK_NAME")?.startsWith("iphoneos") == true)
+            ::iosArm64
+        else
+            ::iosX64
 
     iosTarget("ios") {}
 
     cocoapods {
-        summary = "Some description for the Shared Module"
-        homepage = "Link to the Shared Module homepage"
+        summary = "Bisq"
+        homepage = "https://github.com/bisq-network/bisq-client"
         ios.deploymentTarget = "14.1"
         framework {
             baseName = "shared"
@@ -29,64 +31,61 @@ kotlin {
         podfile = project.file("../iosApp/Podfile")
     }
 
-    jvm("desktop") {
-        compilations.all {
-            kotlinOptions.jvmTarget = "11"
-        }
-    }
-
-    js("web",IR) {
-        browser {
-            useCommonJs()
-            binaries.executable()
-        }
-    }
-
     sourceSets {
-        val commonMain by getting
+        val commonMain by getting {
+            dependencies {
+                implementation(Kotlinx.datetime)
+                implementation(Kotlinx.coroutines)
+                implementation(SQLDelight.runtime)
+                implementation(Kotlin.reflect)
+            }
+        }
         val commonTest by getting {
             dependencies {
-                implementation(kotlin("test-common"))
-                implementation(kotlin("test-annotations-common"))
             }
         }
-        val androidMain by getting
+        val androidMain by getting {
+            dependencies {
+                implementation(SQLDelight.androidDriver)
+            }
+        }
         val androidTest by getting {
             dependencies {
-                implementation(kotlin("test-junit"))
-                implementation("junit:junit:4.13.2")
             }
         }
-        val iosMain by getting
-        val iosTest by getting
-        val desktopMain by getting
-        val desktopTest by getting {
+        val iosMain by getting {
             dependencies {
-                implementation(kotlin("test-junit"))
-                implementation("junit:junit:4.13.2")
+                implementation(SQLDelight.nativeDriver)
             }
         }
-        val webMain by getting
-        val webTest by getting {
+        val iosTest by getting {
             dependencies {
-                implementation(kotlin("test-junit"))
-                implementation("junit:junit:4.13.2")
             }
         }
     }
 }
 
 android {
-    compileSdk = Versions.compile_sdk
-    buildToolsVersion = Versions.build_tools
+    compileSdk = Application.compileSdk
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     defaultConfig {
-        minSdk = Versions.min_sdk
-        targetSdk = Versions.target_sdk
+        minSdk = Application.minSdk
+        targetSdk = Application.targetSdk
     }
     buildTypes {
         getByName("release") {
             isMinifyEnabled = true
         }
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+}
+
+sqldelight {
+    database("NotificationDatabase") {
+        packageName = "bisq.client.datasource.cache"
+        sourceFolders = listOf("sqldelight")
     }
 }
