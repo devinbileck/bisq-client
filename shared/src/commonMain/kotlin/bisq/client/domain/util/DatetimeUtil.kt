@@ -2,8 +2,7 @@ package bisq.client.domain.util
 
 import kotlinx.datetime.*
 
-class DatetimeUtil
-{
+class DatetimeUtil {
     fun now(): LocalDateTime {
         val currentMoment: Instant = Clock.System.now()
         return currentMoment.toLocalDateTime(TimeZone.UTC)
