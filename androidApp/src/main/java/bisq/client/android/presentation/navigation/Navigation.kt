@@ -16,7 +16,6 @@ import bisq.client.android.presentation.notification_list.NotificationListScreen
 import bisq.client.android.presentation.notification_list.NotificationListViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
-@ExperimentalStdlibApi
 @ExperimentalCoroutinesApi
 @ExperimentalFoundationApi
 @ExperimentalComposeUiApi
@@ -44,7 +43,8 @@ fun Navigation() {
             val viewModel: NotificationDetailViewModel = hiltViewModel()
             NotificationDetailScreen(
                 state = viewModel.state.value,
-                onTriggerEvent = viewModel::onTriggerEvent
+                onTriggerEvent = viewModel::onTriggerEvent,
+                navController = navController
             )
         }
     }

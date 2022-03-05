@@ -13,6 +13,8 @@ import bisq.client.presentation.notification_detail.NotificationDetailEvents
 import bisq.client.presentation.notification_detail.NotificationDetailState
 import bisq.client.util.Logger
 import bisq.client.domain.model.UIComponentType
+import bisq.client.interactors.notification_detail.RemoveNotification
+import bisq.client.presentation.notification_list.NotificationListEvents
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.*
 import javax.inject.Inject
@@ -23,6 +25,7 @@ class NotificationDetailViewModel
 constructor(
     private val savedStateHandle: SavedStateHandle,
     private val getNotification: GetNotification,
+    private val removeNotification: RemoveNotification
 ): ViewModel() {
 
     private val logger = Logger("NotificationDetailViewModel")
@@ -39,6 +42,9 @@ constructor(
         when (event) {
             is NotificationDetailEvents.GetNotification -> {
                 getNotification(notificationId = event.notificationId)
+            }
+            is NotificationDetailEvents.RemoveNotification -> {
+                removeNotification(notificationId = event.notificationId)
             }
             is NotificationDetailEvents.OnRemoveHeadMessageFromQueue -> {
                 removeHeadMessage()
@@ -72,6 +78,16 @@ constructor(
             dataState.data?.let { notification ->
                 state.value = state.value.copy(notification = notification)
             }
+
+            dataState.message?.let { message ->
+                appendToMessageQueue(message)
+            }
+        }
+    }
+
+    private fun removeNotification(notificationId: Int) {
+        removeNotification.execute(notificationId = notificationId).collectCommon(viewModelScope) { dataState ->
+            state.value = state.value.copy(isLoading = dataState.isLoading)
 
             dataState.message?.let { message ->
                 appendToMessageQueue(message)

@@ -1,0 +1,27 @@
+CREATE TABLE notification_Entity(
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    type TEXT NOT NULL,
+    message TEXT NOT NULL,
+    time_occurred REAL NOT NULL,
+    time_received REAL NOT NULL
+);
+
+insertNotification:
+INSERT OR REPLACE INTO notification_Entity (
+    type,
+    message,
+    time_occurred,
+    time_received
+) VALUES (?, ?, ?, ?);
+
+removeNotificationById:
+DELETE FROM notification_Entity WHERE id = :id;
+
+removeAllNotifications:
+DELETE FROM notification_Entity;
+
+getAllNotifications:
+SELECT * FROM notification_Entity ORDER BY time_occurred DESC;
+
+getNotificationById:
+SELECT * FROM notification_Entity WHERE id = :id;

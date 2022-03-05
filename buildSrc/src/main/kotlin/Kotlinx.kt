@@ -3,5 +3,5 @@ object Kotlinx {
     const val datetime = "org.jetbrains.kotlinx:kotlinx-datetime:${kotlinxDatetimeVersion}"
 
     private const val kotlinxCoroutinesVersion = "1.5.2"
-    const val coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${kotlinxCoroutinesVersion}"
+    const val coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${kotlinxCoroutinesVersion}-native-mt"
 }

@@ -1,0 +1,26 @@
+package bisq.client.domain.util
+
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.*
+
+/**
+ * Must create a (class + function) since extension functions can't be used on iOS with KMM.
+ * Otherwise could create a Flow<T>.collectCommon() function.
+ *
+ * Reference:
+ * https://stackoverflow.com/questions/64175099/listen-to-kotlin-coroutine-flow-from-ios
+ */
+fun <T> Flow<T>.asCommonFlow(): CommonFlow<T> = CommonFlow(this)
+
+class CommonFlow<T>(private val origin: Flow<T>): Flow<T> by origin {
+    @Throws(Exception::class)
+    fun collectCommon(
+        coroutineScope: CoroutineScope? = null, // 'viewModelScope' on Android and 'nil' on iOS
+        callback: (T) -> Unit, // callback on each emission
+    ) {
+        onEach {
+            callback(it)
+        }.launchIn(coroutineScope ?: CoroutineScope(Dispatchers.Main))
+    }
+}

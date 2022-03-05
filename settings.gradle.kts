@@ -1,12 +1,11 @@
 pluginManagement {
     repositories {
-        gradlePluginPortal()
         google()
+        gradlePluginPortal()
         mavenCentral()
     }
 }
 
 rootProject.name = "Bisq"
-
 include(":androidApp")
-include(":shared")
+include(":common")

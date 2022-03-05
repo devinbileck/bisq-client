@@ -6,7 +6,7 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":shared"))
+    implementation(project(":common"))
 
     implementation(AndroidX.appCompat)
     implementation(AndroidX.fragmentKtx)
@@ -62,8 +62,8 @@ android {
         }
     }
     lint {
-        warningsAsErrors = true
-        abortOnError = true
+//        warningsAsErrors = true
+//        abortOnError = true
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8

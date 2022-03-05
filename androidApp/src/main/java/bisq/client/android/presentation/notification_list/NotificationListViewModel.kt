@@ -6,13 +6,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import bisq.client.domain.model.GenericMessageInfo
 import bisq.client.domain.model.Notification
+import bisq.client.domain.model.UIComponentType
 import bisq.client.domain.util.GenericMessageInfoQueueUtil
 import bisq.client.domain.util.Queue
-import bisq.client.interactors.notification_list.SearchNotifications
+import bisq.client.interactors.notification_detail.RemoveNotification
+import bisq.client.interactors.notification_list.FetchNotifications
 import bisq.client.presentation.notification_list.NotificationListEvents
 import bisq.client.presentation.notification_list.NotificationListState
 import bisq.client.util.Logger
-import bisq.client.domain.model.UIComponentType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.*
 import javax.inject.Inject
@@ -21,7 +22,8 @@ import javax.inject.Inject
 class NotificationListViewModel
 @Inject
 constructor(
-    private val searchNotifications: SearchNotifications,
+    private val fetchNotifications: FetchNotifications,
+    private val removeNotification: RemoveNotification
 ): ViewModel() {
 
     private val logger = Logger("NotificationListViewModel")
@@ -37,14 +39,11 @@ constructor(
             is NotificationListEvents.LoadNotifications -> {
                 loadNotifications()
             }
-            is NotificationListEvents.NewSearch -> {
-                newSearch()
-            }
-            is NotificationListEvents.NextPage -> {
-                nextPage()
-            }
             is NotificationListEvents.OnUpdateQuery -> {
-                state.value = state.value.copy(query =  event.query)
+                state.value = state.value.copy(query = event.query)
+            }
+            is NotificationListEvents.RemoveNotification -> {
+                removeNotification(notificationId = event.notificationId)
             }
             is NotificationListEvents.OnRemoveHeadMessageFromQueue -> {
                 removeHeadMessage()
@@ -71,25 +70,12 @@ constructor(
         }
     }
 
-    private fun nextPage() {
-        state.value = state.value.copy(page = state.value.page + 1)
-        loadNotifications()
-    }
-
-    private fun newSearch() {
-        state.value = state.value.copy(page = 1, notifications = listOf())
-        loadNotifications()
-    }
-
     private fun loadNotifications() {
-        searchNotifications.execute(
-            page = state.value.page,
-            query = state.value.query
-        ).collectCommon(viewModelScope) { dataState ->
+        fetchNotifications.execute().collectCommon(viewModelScope) { dataState ->
             state.value = state.value.copy(isLoading = dataState.isLoading)
 
             dataState.data?.let { notifications ->
-                appendNotifications(notifications)
+                state.value = state.value.copy(notifications = notifications)
             }
 
             dataState.message?.let { message ->
@@ -98,10 +84,18 @@ constructor(
         }
     }
 
-    private fun appendNotifications(notifications: List<Notification>) {
-        val curr = ArrayList(state.value.notifications)
-        curr.addAll(notifications)
-        state.value = state.value.copy(notifications = curr)
+    private fun removeNotification(notificationId: Int) {
+        removeNotification.execute(notificationId = notificationId).collectCommon(viewModelScope) { dataState ->
+            state.value = state.value.copy(isLoading = dataState.isLoading)
+
+            dataState.data?.let { notifications ->
+                state.value = state.value.copy(notifications = notifications)
+            }
+
+            dataState.message?.let { message ->
+                appendToMessageQueue(message)
+            }
+        }
     }
 
     private fun appendToMessageQueue(messageInfo: GenericMessageInfo.Builder) {

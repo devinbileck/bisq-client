@@ -2,7 +2,8 @@ package bisq.client.android.di
 
 import bisq.client.datasource.cache.NotificationCache
 import bisq.client.interactors.notification_detail.GetNotification
-import bisq.client.interactors.notification_list.SearchNotifications
+import bisq.client.interactors.notification_detail.RemoveNotification
+import bisq.client.interactors.notification_list.FetchNotifications
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,10 +16,10 @@ object InteractorsModule {
 
     @Singleton
     @Provides
-    fun provideSearchNotifications(
+    fun provideFetchNotifications(
         notificationCache: NotificationCache,
-    ): SearchNotifications {
-        return SearchNotifications(
+    ): FetchNotifications {
+        return FetchNotifications(
             notificationCache = notificationCache
         )
     }
@@ -29,6 +30,16 @@ object InteractorsModule {
         notificationCache: NotificationCache,
     ): GetNotification {
         return GetNotification(
+            notificationCache = notificationCache
+        )
+    }
+
+    @Singleton
+    @Provides
+    fun provideRemoveNotification(
+        notificationCache: NotificationCache,
+    ): RemoveNotification {
+        return RemoveNotification(
             notificationCache = notificationCache
         )
     }

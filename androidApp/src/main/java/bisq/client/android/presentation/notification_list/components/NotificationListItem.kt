@@ -1,5 +1,6 @@
 package bisq.client.android.presentation.notification_list.components
 
+import android.graphics.Color
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,6 +11,8 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import bisq.client.android.presentation.components.icons.*
 import bisq.client.domain.model.Notification
@@ -18,10 +21,10 @@ import bisq.client.domain.util.DatetimeUtil
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalCoroutinesApi
-@ExperimentalStdlibApi
 @Composable
 fun NotificationListItem(
     notification: Notification,
+    unread: Boolean,
     onClick: () -> Unit
 ) {
     val datetimeUtil = remember { DatetimeUtil() }
@@ -29,7 +32,7 @@ fun NotificationListItem(
         modifier = Modifier
             .padding(
                 bottom = 6.dp,
-                top = 6.dp,
+                top = 6.dp
             )
             .fillMaxWidth()
             .clickable(onClick = onClick),
@@ -50,6 +53,7 @@ fun NotificationListItem(
             Text(
                 text = notification.message,
                 style = MaterialTheme.typography.h5,
+                fontWeight = if (unread) FontWeight.Bold else null,
                 modifier = Modifier
                     .padding(start = 8.dp)
             )
@@ -61,7 +65,8 @@ fun NotificationListItem(
         ) {
             Text(
                 text = datetimeUtil.prettyDatetime(notification.timeOccurred),
-                style = MaterialTheme.typography.caption
+                style = MaterialTheme.typography.caption,
+                fontWeight = if (unread) FontWeight.Bold else null
             )
         }
     }
