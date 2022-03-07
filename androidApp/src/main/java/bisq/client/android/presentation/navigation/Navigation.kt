@@ -3,6 +3,7 @@ package bisq.client.android.presentation.navigation
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
@@ -14,6 +15,7 @@ import bisq.client.android.presentation.notification_detail.NotificationDetailSc
 import bisq.client.android.presentation.notification_detail.NotificationDetailViewModel
 import bisq.client.android.presentation.notification_list.NotificationListScreen
 import bisq.client.android.presentation.notification_list.NotificationListViewModel
+import bisq.client.presentation.notification_list.NotificationListEvents
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalCoroutinesApi
@@ -31,6 +33,7 @@ fun Navigation() {
                 onTriggerEvent = viewModel::onTriggerEvent,
                 onClickNotificationListItem = { notificationId ->
                     navController.navigate("${Screen.NotificationDetail.route}/$notificationId")
+                    viewModel.onTriggerEvent(NotificationListEvents.UpdateNotification(notificationId))
                 }
             )
         }
@@ -41,10 +44,16 @@ fun Navigation() {
             })
         ) {
             val viewModel: NotificationDetailViewModel = hiltViewModel()
+            val notificationListViewModel = hiltViewModel<NotificationListViewModel>(
+                remember {
+                    navController.getBackStackEntry(Screen.NotificationList.route)
+                }
+            )
             NotificationDetailScreen(
                 state = viewModel.state.value,
                 onTriggerEvent = viewModel::onTriggerEvent,
-                navController = navController
+                navController = navController,
+                notificationListViewModel = notificationListViewModel
             )
         }
     }

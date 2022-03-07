@@ -3,7 +3,8 @@ CREATE TABLE notification_Entity(
     type TEXT NOT NULL,
     message TEXT NOT NULL,
     time_occurred REAL NOT NULL,
-    time_received REAL NOT NULL
+    time_received REAL NOT NULL,
+    unread INTEGER AS Boolean NOT NULL DEFAULT 1
 );
 
 insertNotification:
@@ -14,14 +15,20 @@ INSERT OR REPLACE INTO notification_Entity (
     time_received
 ) VALUES (?, ?, ?, ?);
 
-removeNotificationById:
-DELETE FROM notification_Entity WHERE id = :id;
-
-removeAllNotifications:
-DELETE FROM notification_Entity;
-
 getAllNotifications:
 SELECT * FROM notification_Entity ORDER BY time_occurred DESC;
 
 getNotificationById:
 SELECT * FROM notification_Entity WHERE id = :id;
+
+clearNotificationUnreadById:
+UPDATE notification_Entity SET unread = 0 WHERE id = :id;
+
+clearAllNotificationsUnread:
+UPDATE notification_Entity SET unread = 0;
+
+removeNotificationById:
+DELETE FROM notification_Entity WHERE id = :id;
+
+removeAllNotifications:
+DELETE FROM notification_Entity;

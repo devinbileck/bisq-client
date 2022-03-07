@@ -5,10 +5,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import bisq.client.domain.model.GenericMessageInfo
-import bisq.client.domain.model.Notification
 import bisq.client.domain.model.UIComponentType
 import bisq.client.domain.util.GenericMessageInfoQueueUtil
 import bisq.client.domain.util.Queue
+import bisq.client.interactors.notification_detail.UpdateNotification
 import bisq.client.interactors.notification_detail.RemoveNotification
 import bisq.client.interactors.notification_list.FetchNotifications
 import bisq.client.presentation.notification_list.NotificationListEvents
@@ -23,6 +23,7 @@ class NotificationListViewModel
 @Inject
 constructor(
     private val fetchNotifications: FetchNotifications,
+    private val updateNotification: UpdateNotification,
     private val removeNotification: RemoveNotification
 ): ViewModel() {
 
@@ -41,6 +42,9 @@ constructor(
             }
             is NotificationListEvents.OnUpdateQuery -> {
                 state.value = state.value.copy(query = event.query)
+            }
+            is NotificationListEvents.UpdateNotification -> {
+                updateNotification(notificationId = event.notificationId)
             }
             is NotificationListEvents.RemoveNotification -> {
                 removeNotification(notificationId = event.notificationId)
@@ -72,6 +76,20 @@ constructor(
 
     private fun loadNotifications() {
         fetchNotifications.execute().collectCommon(viewModelScope) { dataState ->
+            state.value = state.value.copy(isLoading = dataState.isLoading)
+
+            dataState.data?.let { notifications ->
+                state.value = state.value.copy(notifications = notifications)
+            }
+
+            dataState.message?.let { message ->
+                appendToMessageQueue(message)
+            }
+        }
+    }
+
+    private fun updateNotification(notificationId: Int) {
+        updateNotification.execute(notificationId = notificationId).collectCommon(viewModelScope) { dataState ->
             state.value = state.value.copy(isLoading = dataState.isLoading)
 
             dataState.data?.let { notifications ->

@@ -7,8 +7,6 @@ import bisq.client.domain.model.NotificationType
 import bisq.client.domain.model.UIComponentType
 import bisq.client.domain.util.*
 import bisq.client.util.BuildConfig
-import bisq.client.util.Logger
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 
 class FetchNotifications(
@@ -19,7 +17,7 @@ class FetchNotifications(
             emit(DataState.loading())
 
             if (BuildConfig().isDebug()) {
-                notificationCache.clear()
+                notificationCache.removeAll()
                 notificationCache.insert(
                     listOf(
                         Notification(

@@ -6,15 +6,15 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import bisq.client.domain.model.GenericMessageInfo
+import bisq.client.domain.model.UIComponentType
 import bisq.client.domain.util.GenericMessageInfoQueueUtil
 import bisq.client.domain.util.Queue
 import bisq.client.interactors.notification_detail.GetNotification
+import bisq.client.interactors.notification_detail.RemoveNotification
+import bisq.client.interactors.notification_detail.UpdateNotification
 import bisq.client.presentation.notification_detail.NotificationDetailEvents
 import bisq.client.presentation.notification_detail.NotificationDetailState
 import bisq.client.util.Logger
-import bisq.client.domain.model.UIComponentType
-import bisq.client.interactors.notification_detail.RemoveNotification
-import bisq.client.presentation.notification_list.NotificationListEvents
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.*
 import javax.inject.Inject
@@ -23,8 +23,9 @@ import javax.inject.Inject
 class NotificationDetailViewModel
 @Inject
 constructor(
-    private val savedStateHandle: SavedStateHandle,
+    savedStateHandle: SavedStateHandle,
     private val getNotification: GetNotification,
+    private val updateNotification: UpdateNotification,
     private val removeNotification: RemoveNotification
 ): ViewModel() {
 
@@ -42,6 +43,9 @@ constructor(
         when (event) {
             is NotificationDetailEvents.GetNotification -> {
                 getNotification(notificationId = event.notificationId)
+            }
+            is NotificationDetailEvents.UpdateNotification -> {
+                updateNotification(notificationId = event.notificationId)
             }
             is NotificationDetailEvents.RemoveNotification -> {
                 removeNotification(notificationId = event.notificationId)
@@ -83,6 +87,10 @@ constructor(
                 appendToMessageQueue(message)
             }
         }
+    }
+
+    private fun updateNotification(notificationId: Int) {
+        updateNotification.execute(notificationId = notificationId)
     }
 
     private fun removeNotification(notificationId: Int) {

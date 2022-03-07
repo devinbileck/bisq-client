@@ -3,6 +3,7 @@ package bisq.client.android.di
 import bisq.client.datasource.cache.NotificationCache
 import bisq.client.interactors.notification_detail.GetNotification
 import bisq.client.interactors.notification_detail.RemoveNotification
+import bisq.client.interactors.notification_detail.UpdateNotification
 import bisq.client.interactors.notification_list.FetchNotifications
 import dagger.Module
 import dagger.Provides
@@ -17,7 +18,7 @@ object InteractorsModule {
     @Singleton
     @Provides
     fun provideFetchNotifications(
-        notificationCache: NotificationCache,
+        notificationCache: NotificationCache
     ): FetchNotifications {
         return FetchNotifications(
             notificationCache = notificationCache
@@ -27,7 +28,7 @@ object InteractorsModule {
     @Singleton
     @Provides
     fun provideGetNotification(
-        notificationCache: NotificationCache,
+        notificationCache: NotificationCache
     ): GetNotification {
         return GetNotification(
             notificationCache = notificationCache
@@ -36,8 +37,18 @@ object InteractorsModule {
 
     @Singleton
     @Provides
+    fun provideUpdateNotification(
+        notificationCache: NotificationCache
+    ): UpdateNotification {
+        return UpdateNotification(
+            notificationCache = notificationCache
+        )
+    }
+
+    @Singleton
+    @Provides
     fun provideRemoveNotification(
-        notificationCache: NotificationCache,
+        notificationCache: NotificationCache
     ): RemoveNotification {
         return RemoveNotification(
             notificationCache = notificationCache

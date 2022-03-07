@@ -2,7 +2,6 @@ package bisq.client.datasource.cache
 
 import bisq.client.domain.model.Notification
 import bisq.client.domain.util.DatetimeUtil
-import bisq.client.presentation.notification_list.NOTIFICATION_PAGINATION_PAGE_SIZE
 
 class NotificationCacheImpl(
     val notificationDatabase: NotificationDatabase,
@@ -38,11 +37,19 @@ class NotificationCacheImpl(
         }
     }
 
+    override fun clearUnread(notificationId: Int) {
+        queries.clearNotificationUnreadById(id = notificationId.toLong())
+    }
+
+    override fun clearAllUnread() {
+        queries.clearAllNotificationsUnread()
+    }
+
     override fun remove(notificationId: Int) {
         queries.removeNotificationById(id = notificationId.toLong())
     }
 
-    override fun clear() {
+    override fun removeAll() {
         queries.removeAllNotifications()
     }
 

@@ -8,4 +8,5 @@ data class Notification(
     val message: String,
     val timeOccurred: LocalDateTime,
     val timeReceived: LocalDateTime,
+    val unread: Boolean = true
 )

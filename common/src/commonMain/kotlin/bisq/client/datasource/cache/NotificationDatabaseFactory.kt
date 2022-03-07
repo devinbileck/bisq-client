@@ -24,6 +24,7 @@ fun Notification_Entity.toNotification(): Notification {
         message = message,
         timeOccurred = datetimeUtil.toLocalDate(time_occurred),
         timeReceived = datetimeUtil.toLocalDate(time_received),
+        unread = unread
     )
 }
 

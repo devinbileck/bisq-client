@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import bisq.client.android.presentation.components.icons.*
@@ -24,7 +25,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @Composable
 fun NotificationListItem(
     notification: Notification,
-    unread: Boolean,
     onClick: () -> Unit
 ) {
     val datetimeUtil = remember { DatetimeUtil() }
@@ -51,9 +51,10 @@ fun NotificationListItem(
                 else -> UnknownIcon()
             }
             Text(
-                text = notification.message,
+                text = NotificationType.toString(
+                    NotificationType.valueOf(notification.type)),
                 style = MaterialTheme.typography.h5,
-                fontWeight = if (unread) FontWeight.Bold else null,
+                fontWeight = if (notification.unread) FontWeight.Bold else null,
                 modifier = Modifier
                     .padding(start = 8.dp)
             )
@@ -66,7 +67,7 @@ fun NotificationListItem(
             Text(
                 text = datetimeUtil.prettyDatetime(notification.timeOccurred),
                 style = MaterialTheme.typography.caption,
-                fontWeight = if (unread) FontWeight.Bold else null
+                fontWeight = if (notification.unread) FontWeight.Bold else null
             )
         }
     }

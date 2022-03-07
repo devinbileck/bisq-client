@@ -13,8 +13,12 @@ interface NotificationCache {
     @Throws(NullPointerException::class)
     fun get(notificationId: Int): Notification?
 
+    fun clearUnread(notificationId: Int)
+
+    fun clearAllUnread()
+
     fun remove(notificationId: Int)
 
-    fun clear()
+    fun removeAll()
 
 }

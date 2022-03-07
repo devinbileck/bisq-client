@@ -13,18 +13,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.DismissDirection.EndToStart
 import androidx.compose.material.DismissDirection.StartToEnd
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Done
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import bisq.client.android.presentation.components.NothingHere
 import bisq.client.domain.model.Notification
 import bisq.client.presentation.notification_list.NotificationListEvents
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -46,7 +41,7 @@ fun NotificationList(
             ) {
                 Column(modifier = Modifier.align(Alignment.Center)) {
                     Text(
-                        modifier = Modifier.padding(8.dp).align(Alignment.CenterHorizontally),
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
                         text = "No notifications",
                         style = MaterialTheme.typography.h2
                     )
@@ -56,15 +51,11 @@ fun NotificationList(
         else {
             LazyColumn {
                 items(notifications, {notification: Notification -> notification.id}) { notification ->
-                    var unread by remember { mutableStateOf(true) }
                     val dismissState = rememberDismissState(
                         confirmStateChange = {
-                            if (it == DismissValue.DismissedToEnd) {
-                                unread = false
-                                it != DismissValue.DismissedToEnd
-                            }
-                            else if (it == DismissValue.DismissedToStart) {
-                                onTriggerEvent(NotificationListEvents.RemoveNotification(notificationId = notification.id))
+                            if (it == DismissValue.DismissedToStart) {
+                                onTriggerEvent(NotificationListEvents.RemoveNotification(
+                                    notificationId = notification.id))
                                 it != DismissValue.DismissedToStart
                             }
                             it == DismissValue.Default
@@ -73,7 +64,7 @@ fun NotificationList(
                     SwipeToDismiss(
                         state = dismissState,
                         modifier = Modifier.padding(vertical = 1.dp),
-                        directions = setOf(StartToEnd, EndToStart),
+                        directions = setOf(EndToStart),
                         dismissThresholds = { direction ->
                             FractionalThreshold(if (direction == StartToEnd) 0.25f else 0.5f)
                         },
@@ -90,9 +81,9 @@ fun NotificationList(
                                 StartToEnd -> Alignment.CenterStart
                                 EndToStart -> Alignment.CenterEnd
                             }
-                            val icon = when (direction) {
-                                StartToEnd -> Icons.Default.Done
-                                EndToStart -> Icons.Default.Delete
+                            val text = when (direction) {
+                                StartToEnd -> "Archive"
+                                EndToStart -> "Delete"
                             }
                             val scale by animateFloatAsState(
                                 if (dismissState.targetValue == DismissValue.Default) 0.75f else 1f
@@ -105,9 +96,8 @@ fun NotificationList(
                                     .padding(horizontal = 20.dp),
                                 contentAlignment = alignment
                             ) {
-                                Icon(
-                                    icon,
-                                    contentDescription = "Localized description",
+                                Text(
+                                    text,
                                     modifier = Modifier.scale(scale)
                                 )
                             }
@@ -120,7 +110,6 @@ fun NotificationList(
                             ) {
                                 NotificationListItem(
                                     notification = notification,
-                                    unread = unread,
                                     onClick = {
                                         onClickNotificationListItem(notification.id)
                                     }
